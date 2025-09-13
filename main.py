@@ -3,10 +3,13 @@ from sly import Lexer
 class MyLexer(Lexer):
     tokens = {
         'DEF', 'IF', 'ELSE', 'RETURN', 'PRINT',
-        'IDENTIFICADOR', 'NUMBER', 'OPERATOR', 'DELIMITADOR'
+        'IDENTIFICADOR', 'NUMBER', 'DECIMAL', 'STRING',
+        'OPERATOR', 'DELIMITADOR'
     }
 
-    ignore = ' \t\n\r'
+    # ignora espaços, tabulação, quebras de linha e comentários
+    ignore = ' \t\r\n'
+    ignore_comment = r'\#.*'   # <- Pula os comentários até o \n
 
     def __init__(self):
         super().__init__()
@@ -23,16 +26,27 @@ class MyLexer(Lexer):
             last_cr = -1
         return token.index - last_cr
 
+    # ----------- Palavras reservadas -----------
     DEF    = r'def'
     IF     = r'if'
     ELSE   = r'else'
     RETURN = r'return'
     PRINT  = r'print'
 
+    # ----------- Tokens gerais -----------
     IDENTIFICADOR = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    NUMBER        = r'\d+'
-    OPERATOR      = r'==|=|\+|-|\*|/|<|>'
-    DELIMITADOR   = r'[{}();,:\[\]]'
+
+    # Número decimal (vem antes de NUMBER para ter prioridade)
+    DECIMAL = r'\d+\.\d+'
+
+    # Número inteiro
+    NUMBER  = r'\d+'
+
+    # Strings entre aspas duplas (com escapes básicos)
+    STRING  = r'\"([^\\\n]|(\\.))*?\"'
+
+    OPERATOR    = r'==|=|\+|-|\*|/|<|>'
+    DELIMITADOR = r'[{}();,:\[\]]'
 
     def error(self, t):
         print(f"Illegal character {t.value[0]!r} at index {self.index}")
@@ -56,7 +70,17 @@ def local_line_info(texto, token):
 
 def format_token(token, lexer, texto):
     linha, coluna = local_line_info(texto, token)
-    return (f"Token('{token.type}', lexema = '{token.value}'), "
+
+    # Ajustar valor sem aspas no caso de STRING
+    lexema = token.value
+    if token.type == 'STRING':
+        lexema = lexema[1:-1]  # remove aspas externas
+    elif token.type == 'NUMBER':
+        lexema = int(lexema)
+    elif token.type == 'DECIMAL':
+        lexema = float(lexema)
+
+    return (f"Token('{token.type}', lexema = '{lexema}'), "
             f"linha = {linha}, coluna = {coluna}, "
             f"inicio = {token.index}, fim = {token.end}")
 

@@ -112,8 +112,6 @@ Token('DELIMITADOR', lexema = '['), linha = 2, coluna = 17, inicio = 33, fim = 3
 
 * Suporte a **números decimais**.
 * Suporte a **strings** (`"texto"`).
-* Implementação de um **parser** para análise sintática.
-* Melhor formatação da saída em forma de tabela.
 
 ---
 
