@@ -40,7 +40,8 @@ class MyLexer(Lexer):
     DELIMITADOR = r'[{}();,:\[\]]'
 
     def error(self, t):
-        print(f"Illegal character {t.value[0]!r} at index {self.index}")
+        # Texto em vermelho
+        print(f"\033[31mIllegal character {t.value[0]!r} at index {self.index}\033[0m")
         self.index += 1
 
 
@@ -79,7 +80,7 @@ def format_token(token, lexer, texto):
 # ------------------- Testando -------------------
 lexer = MyLexer()
 
-with open("arquivoTeste.py.py", "r") as f:
+with open("arquivoTeste.py", "r") as f:
     codigo = f.read()
 
 # Cabeçalho da tabela
