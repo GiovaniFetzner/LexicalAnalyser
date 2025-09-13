@@ -11,15 +11,6 @@ class MyLexer(Lexer):
     ignore = ' \t\r\n'
     ignore_comment = ignore_comments = r'(?:\#.*\n)+|("""|\'\'\')(?:.|\n)*?\2'    # <- Pula os comentários até o \n
 
-    def __init__(self):
-        super().__init__()
-        self.lineno = 1
-
-    def t_newline(self, t):
-        r'\n+'
-        self.lineno += t.value.count('\n')
-        pass
-
     def find_column(self, token):
         last_cr = self.text.rfind('\n', 0, token.index)
         if last_cr < 0:
@@ -88,8 +79,25 @@ def format_token(token, lexer, texto):
 # ------------------- Testando -------------------
 lexer = MyLexer()
 
-with open("arquivoTeste.py", "r") as f:
+with open("arquivoTeste.py.py", "r") as f:
     codigo = f.read()
 
+# Cabeçalho da tabela
+print(f"{'Tipo':<15} | {'Lexema':<30} | {'Linha':<5} | {'Coluna':<6} | {'Inicio':<6} | {'Fim':<6}")
+print("-" * 80)
+
+# Iterando pelos tokens
 for token in lexer.tokenize(codigo):
-    print(format_token(token, lexer, codigo))
+    linha, coluna = local_line_info(codigo, token)  # obtém linha e coluna
+    lexema = token.value
+
+    # Ajusta valor do lexema de acordo com o tipo
+    if token.type == 'STRING':
+        lexema = lexema[1:-1]  # remove aspas externas
+    elif token.type == 'NUMBER':
+        lexema = int(lexema)
+    elif token.type == 'DECIMAL':
+        lexema = float(lexema)
+
+    # Imprime uma linha da tabela
+    print(f"{token.type:<15} | {str(lexema):<30} | {linha:<5} | {coluna:<6} | {token.index:<6} | {token.end:<6}")
