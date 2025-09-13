@@ -10,6 +10,12 @@ x = [2, 4, 6]
 print(soma(x))
 
 # Exemplos adicionais
+
+'''
+Teste com muitos volumes
+de palavras
+'''
+
 numero_inteiro = 42
 numero_decimal = 3.14
 texto_simples = "Ola mundo"

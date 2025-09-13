@@ -20,15 +20,21 @@ O objetivo é **tokenizar** um código-fonte de exemplo (`arquivoTeste.py`), ide
    ```bash
    git clone https://github.com/seu-usuario/analisador-lexico.git
    cd analisador-lexico
-   ```
 
-2. [**OPCIONAL**] Crie um ambiente virtual:
+2. \[**OPCIONAL**] Crie um ambiente virtual:
 
    ```bash
    python -m venv venv
    source venv/bin/activate   # Linux/Mac
    venv\Scripts\activate      # Windows
    ```
+
+   > **Observação:** Caso utilize ambiente virtual no PyCharm, é necessário configurá-lo para que a IDE reconheça as bibliotecas instaladas:
+   >
+   > 1. Abra o PyCharm → Preferences → Project → Python Interpreter
+   > 2. Clique na engrenagem → Add… → Existing environment
+   > 3. Navegue até `LexicalAnalyser/venv/bin/python` e selecione
+   > 4. Clique OK → agora o PyCharm vai enxergar o sly instalado
 
 3. Instale as dependências:
 
@@ -90,10 +96,10 @@ O objetivo é **tokenizar** um código-fonte de exemplo (`arquivoTeste.py`), ide
 * Ignora espaços em branco, tabulações e quebras de linha.
 * Mostra informações de posição de cada token:
 
-  * **linha**
-  * **coluna**
-  * **inicio**
-  * **fim**
+    * **linha**
+    * **coluna**
+    * **inicio**
+    * **fim**
 
 ---
 
@@ -105,13 +111,6 @@ Token('IDENTIFICADOR', lexema = 'vetor'), linha = 2, coluna = 8, inicio = 24, fi
 Token('OPERATOR', lexema = '=='), linha = 2, coluna = 14, inicio = 30, fim = 32
 Token('DELIMITADOR', lexema = '['), linha = 2, coluna = 17, inicio = 33, fim = 34
 ```
-
----
-
-## 🛠 Melhorias Futuras
-
-* Suporte a **números decimais**.
-* Suporte a **strings** (`"texto"`).
 
 ---
 

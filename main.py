@@ -9,7 +9,7 @@ class MyLexer(Lexer):
 
     # ignora espaços, tabulação, quebras de linha e comentários
     ignore = ' \t\r\n'
-    ignore_comment = r'\#.*'   # <- Pula os comentários até o \n
+    ignore_comment = ignore_comments = r'(?:\#.*\n)+|("""|\'\'\')(?:.|\n)*?\2'    # <- Pula os comentários até o \n
 
     def __init__(self):
         super().__init__()
