@@ -3,7 +3,7 @@ from sly import Lexer
 class MyLexer(Lexer):
     tokens = {
         'DEF', 'IF', 'ELSE', 'RETURN', 'PRINT',
-        'IDENTIFICADOR', 'NUMBER', 'DECIMAL', 'STRING',
+        'IDENTIFICADOR', 'NUMBER', 'DECIMAL', 'STRING_DOUBLE', 'STRING_SINGLE',
         'OPERATOR', 'DELIMITADOR', 'FROM', 'IMPORT', 'CLASS'
     }
 
@@ -37,7 +37,10 @@ class MyLexer(Lexer):
     NUMBER  = r'\d+'
 
     # Strings entre aspas duplas (com escapes básicos)
-    STRING  = r'\"([^\\\n]|(\\.))*?\"'
+    STRING_DOUBLE = r'\"([^\\\n]|(\\.))*?\"'
+
+    # Strings entre aspas simples (com escapes básicos)
+    STRING_SINGLE = r'\'([^\\\n]|(\\.))*?\''
 
     OPERATOR    = r'==|=|\+|-|\*|/|<|>'
     DELIMITADOR = r'[{}();,:\[\]]'
@@ -83,7 +86,7 @@ def format_token(token, lexer, texto):
 # ------------------- Testando -------------------
 lexer = MyLexer()
 
-with open("main.py", "r") as f:
+with open("MaquinaBebida.py", "r") as f:
     codigo = f.read()
 
 # Cabeçalho da tabela
