@@ -23,6 +23,9 @@ class MyLexer(Lexer):
     ELSE   = r'else'
     RETURN = r'return'
     PRINT  = r'print'
+    FROM = r'from'
+    IMPORT = r'import'
+    CLASS = r'class'
 
     # ----------- Tokens gerais -----------
     IDENTIFICADOR = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -80,7 +83,7 @@ def format_token(token, lexer, texto):
 # ------------------- Testando -------------------
 lexer = MyLexer()
 
-with open("arquivoTeste.py", "r") as f:
+with open("main.py", "r") as f:
     codigo = f.read()
 
 # Cabeçalho da tabela
