@@ -4,7 +4,7 @@ class MyLexer(Lexer):
     tokens = {
         'DEF', 'IF', 'ELSE', 'RETURN', 'PRINT',
         'IDENTIFICADOR', 'NUMBER', 'DECIMAL', 'STRING',
-        'OPERATOR', 'DELIMITADOR'
+        'OPERATOR', 'DELIMITADOR', 'FROM', 'IMPORT', 'CLASS'
     }
 
     # ignora espaços, tabulação, quebras de linha e comentários
