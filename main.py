@@ -2,7 +2,7 @@ from sly import Lexer
 
 class MyLexer(Lexer):
     tokens = {
-        'DEF', 'IF', 'ELSE', 'RETURN', 'PRINT',
+        'DEF', 'IF', 'ELIF', 'ELSE', 'WHILE', 'RETURN', 'PRINT',
         'IDENTIFICADOR', 'NUMBER', 'DECIMAL', 'STRING_DOUBLE', 'STRING_SINGLE',
         'OPERATOR', 'DELIMITADOR', 'FROM', 'IMPORT', 'CLASS'
     }
@@ -20,7 +20,9 @@ class MyLexer(Lexer):
     # ----------- Palavras reservadas -----------
     DEF    = r'def'
     IF     = r'if'
+    ELIF   = r'elif'
     ELSE   = r'else'
+    WHILE  = r'while'
     RETURN = r'return'
     PRINT  = r'print'
     FROM = r'from'
@@ -71,7 +73,7 @@ def format_token(token, lexer, texto):
 
     # Ajustar valor sem aspas no caso de STRING
     lexema = token.value
-    if token.type == 'STRING':
+    if token.type in ('STRING_DOUBLE', 'STRING_SINGLE'):
         lexema = lexema[1:-1]  # remove aspas externas
     elif token.type == 'NUMBER':
         lexema = int(lexema)
@@ -86,7 +88,7 @@ def format_token(token, lexer, texto):
 # ------------------- Testando -------------------
 lexer = MyLexer()
 
-with open("MaquinaBebida.py", "r") as f:
+with open("arquivoTeste.py", "r", encoding="utf-8") as f:
     codigo = f.read()
 
 # Cabeçalho da tabela
