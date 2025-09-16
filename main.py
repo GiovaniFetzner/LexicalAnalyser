@@ -1,10 +1,4 @@
 from sly import Lexer
-
-
-import arquivoTeste
-
-
-
 class MyLexer(Lexer):
     tokens = {
         # léxicos “gerais”
@@ -54,7 +48,6 @@ class MyLexer(Lexer):
     ignore_comment = r'\#.*'
     ignore_tricomment = r"(?:'''[\s\S]*?'''|\"\"\"[\s\S]*?\"\"\")"
 
-   
     # atualiza o contador de linhas
     @_(r'\n+')
     def newline(self, t):
@@ -103,7 +96,6 @@ class MyLexer(Lexer):
     WITH = r"with"
     YIELD = r"yield"
 
-
     # ----------- Tokens gerais -----------
     IDENTIFICADOR = r"[a-zA-Z_][a-zA-Z0-9_]*"
 
@@ -122,8 +114,6 @@ class MyLexer(Lexer):
     # Identificacao do ponto para import de modulos e para Ellipsis
     DOT = r"\."
     ELLIPSIS = r"\.\.\."
-    
-    
 
     OPERATOR = r'==|!=|<=|>=|//=|\*\*|=|\+|-|\*|/|<|>|%'
     DELIMITADOR = r"[{}();,:\[\]]"
@@ -133,9 +123,7 @@ class MyLexer(Lexer):
         print(f"\033[31mIllegal character {t.value[0]!r} at index {self.index}\033[0m")
         self.index += 1
 
-
 # ---------------- Funções auxiliares ----------------
-
 
 def local_line_info(texto, token):
     """
@@ -148,7 +136,6 @@ def local_line_info(texto, token):
     else:
         coluna = token.index + 1
     return linha, coluna
-
 
 def format_token(token, lexer, texto):
     linha, coluna = local_line_info(texto, token)
@@ -167,7 +154,6 @@ def format_token(token, lexer, texto):
         f"linha = {linha}, coluna = {coluna}, "
         f"inicio = {token.index}, fim = {token.end}"
     )
-
 
 # ------------------- Testando -------------------
 lexer = MyLexer()
