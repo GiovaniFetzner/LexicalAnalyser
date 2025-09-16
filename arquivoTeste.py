@@ -1,3 +1,5 @@
+import numpy as np 
+
 #Exemplo com código funcional (divisão e conquista)
 def soma(vetor):
     if vetor == []:
