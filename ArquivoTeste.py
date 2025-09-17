@@ -1,5 +1,3 @@
-import numpy as np 
-
 #Exemplo com código funcional (divisão e conquista)
 def soma(vetor):
     if vetor == []:
@@ -14,8 +12,8 @@ print(soma(x))
 # Exemplos adicionais
 
 '''
-Teste com muitos volumes
-de palavras
+Teste com comentário 
+multinha
 '''
 
 numero_inteiro = 42
