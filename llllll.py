@@ -1,5 +1,5 @@
 from sly import Lexer
-class MyLexer(Lexer):
+class FFFMyLexer(Lexer):
     tokens = {
         # léxicos “gerais”
         'IDENTIFICADOR', 'NUMBER', 'DECIMAL',
@@ -156,7 +156,7 @@ def format_token(token, lexer, texto):
     )
 
 # ------------------- Testando -------------------
-lexer = MyLexer()
+lexer = eeeeee()
 
 with open("MaquinaBebida.py", "r", encoding="utf-8") as f:
     codigo = f.read()
