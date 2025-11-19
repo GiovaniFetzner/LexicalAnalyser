@@ -138,20 +138,20 @@ class PythonLikeParser:
     # Erro
     # -----------------------
     def p_error(self, p):
-        BLUE = '\033[94m'
+        GREEN = '\033[38;2;8;126;108m'
         RESET = '\033[0m'
         self.error = True
 
         if p:
-            print(f"{BLUE}Erro no parser: token não esperado{RESET}")
-            print(f"{BLUE}  Tipo: {p.type}{RESET}")
-            print(f"{BLUE}  Valor: {p.value!r}{RESET}")
-            print(f"{BLUE}  Linha: {p.lineno}{RESET}")
-            print(f"{BLUE}  Posição: {p.lexpos}{RESET}")
+            print(f"{GREEN}Erro no parser: token não esperado{RESET}")
+            print(f"{GREEN}  Tipo: {p.type}{RESET}")
+            print(f"{GREEN}  Valor: {p.value!r}{RESET}")
+            print(f"{GREEN}  Linha: {p.lineno}{RESET}")
+            print(f"{GREEN}  Posição: {p.lexpos}{RESET}")
             rest = p.lexer.lexdata[p.lexpos:p.lexpos + 20]
-            print(f"{BLUE}  Resto da linha: {rest!r}{RESET}")
+            print(f"{GREEN}  Resto da linha: {rest!r}{RESET}")
         else:
-            print(f"{BLUE}Erro no parser: final inesperado do arquivo{RESET}")
+            print(f"{GREEN}Erro no parser: final inesperado do arquivo{RESET}")
 
     # -----------------------
     # Parse
