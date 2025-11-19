@@ -121,5 +121,18 @@ class PythonLikeLexer:
     # Erro
     # ---------------------------
     def t_error(self, t):
-        print(f"Illegal character {t.value[0]!r} at line {t.lineno}")
+        # ANSI escape para vermelho
+        RED = '\033[91m'
+        RESET = '\033[0m'
+
+        # Mensagem detalhada
+        msg = (
+            f"{RED}Character não reconhecido: {t.value[0]!r}\n"
+            f"  Linha: {t.lineno}\n"
+            f"  Posição: {t.lexpos}\n"
+            f"  Resto da linha: {t.lexer.lexdata[t.lexpos:t.lexpos + 20]!r}{RESET}"
+        )
+        print(msg)
+
+        # Pular caractere problemático
         t.lexer.skip(1)
