@@ -137,10 +137,20 @@ class PythonLikeParser:
     # Erro
     # -----------------------
     def p_error(self, p):
+        BLUE = '\033[94m'
+        RESET = '\033[0m'
+
         if p:
-            print(f"Syntax error at {p.type} ({p.value})")
+            print(f"{BLUE}Erro no parser: token não esperado{RESET}")
+            print(f"{BLUE}  Tipo: {p.type}{RESET}")
+            print(f"{BLUE}  Valor: {p.value!r}{RESET}")
+            print(f"{BLUE}  Linha: {p.lineno}{RESET}")
+            print(f"{BLUE}  Posição: {p.lexpos}{RESET}")
+            # Opcional: mostrar próximos 20 caracteres para contexto
+            rest = p.lexer.lexdata[p.lexpos:p.lexpos + 20]
+            print(f"{BLUE}  Resto da linha: {rest!r}{RESET}")
         else:
-            print("Syntax error at EOF")
+            print(f"{BLUE}Erro: EOF não esperado{RESET}")
 
     # -----------------------
     # Parse
