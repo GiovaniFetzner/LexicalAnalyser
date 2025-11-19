@@ -1,0 +1,4 @@
+numerador = 20
+denominador = 4
+resultado = numerador / denominador
+print(resultado)

@@ -68,9 +68,9 @@ class PythonLikeParser:
         p[0] = node
 
     def p_statement_print(self, p):
-        """statement : PRINT '(' NAME ')' NEWLINE"""
+        """statement : PRINT '(' expression ')' NEWLINE"""
         node = ASTNode('print')
-        node.add(ASTNode('var', p[3]))
+        node.add(p[3])
         p[0] = node
 
     def p_statement_if(self, p):

@@ -48,7 +48,7 @@ Rule 2     statements -> statements statement
 Rule 3     statements -> statement
 Rule 4     statements -> statements NEWLINE
 Rule 5     statement -> NAME = expression NEWLINE
-Rule 6     statement -> PRINT ( NAME ) NEWLINE
+Rule 6     statement -> PRINT ( expression ) NEWLINE
 Rule 7     statement -> IF expression : NEWLINE INDENT statements DEDENT
 Rule 8     statement -> IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
 Rule 9     statement -> WHILE expression : NEWLINE INDENT statements DEDENT
@@ -99,7 +99,7 @@ IN                   :
 INDENT               : 7 8 8 9
 IS                   : 
 LAMBDA               : 
-NAME                 : 5 6 15
+NAME                 : 5 15
 NEWLINE              : 4 5 6 7 8 8 9 16
 NONE                 : 
 NONLOCAL             : 
@@ -120,7 +120,7 @@ error                :
 
 Nonterminals, with rules where they appear
 
-expression           : 5 7 8 9 10 10 11 11 12 12 13 13
+expression           : 5 6 7 8 9 10 10 11 11 12 12 13 13
 program              : 0
 statement            : 2 3
 statements           : 1 2 4 7 8 8 9
@@ -135,7 +135,7 @@ state 0
     (3) statements -> . statement
     (4) statements -> . statements NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
@@ -163,7 +163,7 @@ state 2
     (2) statements -> statements . statement
     (4) statements -> statements . NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
@@ -213,7 +213,7 @@ state 5
 
 state 6
 
-    (6) statement -> PRINT . ( NAME ) NEWLINE
+    (6) statement -> PRINT . ( expression ) NEWLINE
 
     (               shift and go to state 12
 
@@ -308,10 +308,18 @@ state 11
 
 state 12
 
-    (6) statement -> PRINT ( . NAME ) NEWLINE
+    (6) statement -> PRINT ( . expression ) NEWLINE
+    (10) expression -> . expression + expression
+    (11) expression -> . expression - expression
+    (12) expression -> . expression * expression
+    (13) expression -> . expression / expression
+    (14) expression -> . NUMBER
+    (15) expression -> . NAME
 
-    NAME            shift and go to state 18
+    NUMBER          shift and go to state 14
+    NAME            shift and go to state 15
 
+    expression                     shift and go to state 18
 
 state 13
 
@@ -339,6 +347,7 @@ state 14
     *               reduce using rule 14 (expression -> NUMBER .)
     /               reduce using rule 14 (expression -> NUMBER .)
     NEWLINE         reduce using rule 14 (expression -> NUMBER .)
+    )               reduce using rule 14 (expression -> NUMBER .)
 
 
 state 15
@@ -351,6 +360,7 @@ state 15
     *               reduce using rule 15 (expression -> NAME .)
     /               reduce using rule 15 (expression -> NAME .)
     NEWLINE         reduce using rule 15 (expression -> NAME .)
+    )               reduce using rule 15 (expression -> NAME .)
 
 
 state 16
@@ -385,9 +395,17 @@ state 17
 
 state 18
 
-    (6) statement -> PRINT ( NAME . ) NEWLINE
+    (6) statement -> PRINT ( expression . ) NEWLINE
+    (10) expression -> expression . + expression
+    (11) expression -> expression . - expression
+    (12) expression -> expression . * expression
+    (13) expression -> expression . / expression
 
     )               shift and go to state 26
+    +               shift and go to state 20
+    -               shift and go to state 21
+    *               shift and go to state 22
+    /               shift and go to state 23
 
 
 state 19
@@ -480,7 +498,7 @@ state 25
 
 state 26
 
-    (6) statement -> PRINT ( NAME ) . NEWLINE
+    (6) statement -> PRINT ( expression ) . NEWLINE
 
     NEWLINE         shift and go to state 33
 
@@ -505,6 +523,7 @@ state 28
     +               reduce using rule 10 (expression -> expression + expression .)
     -               reduce using rule 10 (expression -> expression + expression .)
     NEWLINE         reduce using rule 10 (expression -> expression + expression .)
+    )               reduce using rule 10 (expression -> expression + expression .)
     *               shift and go to state 22
     /               shift and go to state 23
 
@@ -526,6 +545,7 @@ state 29
     +               reduce using rule 11 (expression -> expression - expression .)
     -               reduce using rule 11 (expression -> expression - expression .)
     NEWLINE         reduce using rule 11 (expression -> expression - expression .)
+    )               reduce using rule 11 (expression -> expression - expression .)
     *               shift and go to state 22
     /               shift and go to state 23
 
@@ -549,6 +569,7 @@ state 30
     *               reduce using rule 12 (expression -> expression * expression .)
     /               reduce using rule 12 (expression -> expression * expression .)
     NEWLINE         reduce using rule 12 (expression -> expression * expression .)
+    )               reduce using rule 12 (expression -> expression * expression .)
 
   ! +               [ shift and go to state 20 ]
   ! -               [ shift and go to state 21 ]
@@ -570,6 +591,7 @@ state 31
     *               reduce using rule 13 (expression -> expression / expression .)
     /               reduce using rule 13 (expression -> expression / expression .)
     NEWLINE         reduce using rule 13 (expression -> expression / expression .)
+    )               reduce using rule 13 (expression -> expression / expression .)
 
   ! +               [ shift and go to state 20 ]
   ! -               [ shift and go to state 21 ]
@@ -586,15 +608,15 @@ state 32
 
 state 33
 
-    (6) statement -> PRINT ( NAME ) NEWLINE .
+    (6) statement -> PRINT ( expression ) NEWLINE .
 
-    NEWLINE         reduce using rule 6 (statement -> PRINT ( NAME ) NEWLINE .)
-    NAME            reduce using rule 6 (statement -> PRINT ( NAME ) NEWLINE .)
-    PRINT           reduce using rule 6 (statement -> PRINT ( NAME ) NEWLINE .)
-    IF              reduce using rule 6 (statement -> PRINT ( NAME ) NEWLINE .)
-    WHILE           reduce using rule 6 (statement -> PRINT ( NAME ) NEWLINE .)
-    $end            reduce using rule 6 (statement -> PRINT ( NAME ) NEWLINE .)
-    DEDENT          reduce using rule 6 (statement -> PRINT ( NAME ) NEWLINE .)
+    NEWLINE         reduce using rule 6 (statement -> PRINT ( expression ) NEWLINE .)
+    NAME            reduce using rule 6 (statement -> PRINT ( expression ) NEWLINE .)
+    PRINT           reduce using rule 6 (statement -> PRINT ( expression ) NEWLINE .)
+    IF              reduce using rule 6 (statement -> PRINT ( expression ) NEWLINE .)
+    WHILE           reduce using rule 6 (statement -> PRINT ( expression ) NEWLINE .)
+    $end            reduce using rule 6 (statement -> PRINT ( expression ) NEWLINE .)
+    DEDENT          reduce using rule 6 (statement -> PRINT ( expression ) NEWLINE .)
 
 
 state 34
@@ -605,7 +627,7 @@ state 34
     (3) statements -> . statement
     (4) statements -> . statements NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
@@ -627,7 +649,7 @@ state 35
     (3) statements -> . statement
     (4) statements -> . statements NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
@@ -649,7 +671,7 @@ state 36
     (2) statements -> statements . statement
     (4) statements -> statements . NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
@@ -670,7 +692,7 @@ state 37
     (2) statements -> statements . statement
     (4) statements -> statements . NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
@@ -741,7 +763,7 @@ state 43
     (3) statements -> . statement
     (4) statements -> . statements NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
@@ -762,7 +784,7 @@ state 44
     (2) statements -> statements . statement
     (4) statements -> statements . NEWLINE
     (5) statement -> . NAME = expression NEWLINE
-    (6) statement -> . PRINT ( NAME ) NEWLINE
+    (6) statement -> . PRINT ( expression ) NEWLINE
     (7) statement -> . IF expression : NEWLINE INDENT statements DEDENT
     (8) statement -> . IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT
     (9) statement -> . WHILE expression : NEWLINE INDENT statements DEDENT
