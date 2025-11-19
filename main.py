@@ -49,6 +49,11 @@ with open(input_file, "r") as f:
 parser = PythonLikeParser()
 ast_root = parser.parse(code)
 
+# Checa se houve erro no lexer ou parser
+if parser.lexer.error or parser.error or ast_root is None:
+    print("Ocorreram erros no lexer ou parser. Nenhum arquivo AST será gerado.")
+    exit(1)
+
 # -------------------------------
 # Gerar DOT
 # -------------------------------

@@ -11,6 +11,7 @@ class ASTNode:
         self.id = str(uuid.uuid4())
         self.type = type_
         self.value = value
+        self.error = False  # indica erro do parser
         self.children = []
 
     def add(self, node):
@@ -139,6 +140,7 @@ class PythonLikeParser:
     def p_error(self, p):
         BLUE = '\033[94m'
         RESET = '\033[0m'
+        self.error = True
 
         if p:
             print(f"{BLUE}Erro no parser: token não esperado{RESET}")
@@ -146,11 +148,10 @@ class PythonLikeParser:
             print(f"{BLUE}  Valor: {p.value!r}{RESET}")
             print(f"{BLUE}  Linha: {p.lineno}{RESET}")
             print(f"{BLUE}  Posição: {p.lexpos}{RESET}")
-            # Opcional: mostrar próximos 20 caracteres para contexto
             rest = p.lexer.lexdata[p.lexpos:p.lexpos + 20]
             print(f"{BLUE}  Resto da linha: {rest!r}{RESET}")
         else:
-            print(f"{BLUE}Erro: EOF não esperado{RESET}")
+            print(f"{BLUE}Erro no parser: final inesperado do arquivo{RESET}")
 
     # -----------------------
     # Parse

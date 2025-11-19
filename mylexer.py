@@ -112,27 +112,22 @@ class PythonLikeLexer:
     # ---------------------------
     # Retorna token (inclui tokens pendentes)
     # ---------------------------
-    def token(self):
-        if self.pending:
-            return self.pending.pop(0)
-        return self.lexer.token()
+    def __init__(self):
+        self.indent_stack = [0]
+        self.pending = []
+        self.error = False  # indica se houve erro
+        self.lexer = lex.lex(module=self)
 
     # ---------------------------
     # Erro
     # ---------------------------
     def t_error(self, t):
-        # ANSI escape para vermelho
         RED = '\033[91m'
         RESET = '\033[0m'
-
-        # Mensagem detalhada
-        msg = (
-            f"{RED}Character não reconhecido: {t.value[0]!r}\n"
-            f"  Linha: {t.lineno}\n"
-            f"  Posição: {t.lexpos}\n"
-            f"  Resto da linha: {t.lexer.lexdata[t.lexpos:t.lexpos + 20]!r}{RESET}"
-        )
-        print(msg)
-
-        # Pular caractere problemático
+        print(f"{RED}Character não reconhecido: {t.value[0]!r}{RESET}")
+        print(f"{RED}  Linha: {t.lineno}{RESET}")
+        print(f"{RED}  Posição: {t.lexpos}{RESET}")
+        rest = t.lexer.lexdata[t.lexpos:t.lexpos + 20]
+        print(f"{RED}  Resto da linha: {rest!r}{RESET}")
+        self.error = True
         t.lexer.skip(1)
