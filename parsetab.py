@@ -6,7 +6,7 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = "left+-left*/( ) * + , - . / : < = > AND AS ASSERT ASYNC AWAIT BREAK CLASS CONTINUE DEDENT DEF DEL ELIF ELSE EXCEPT FALSE FINALLY FOR FROM GLOBAL IF IMPORT IN INDENT IS LAMBDA NAME NEWLINE NONE NONLOCAL NOT NUMBER OR PASS PRINT RAISE RETURN STRING TRUE TRY WHILE WITH YIELDprogram : statementsstatements : statements statementstatements : statementstatements : statements NEWLINEstatement : NAME '=' expression NEWLINEstatement : PRINT '(' expression ')' NEWLINEstatement : IF expression ':' NEWLINE INDENT statements DEDENTstatement : IF expression ':' NEWLINE INDENT statements DEDENT ELSE ':' NEWLINE INDENT statements DEDENTstatement : WHILE expression ':' NEWLINE INDENT statements DEDENTexpression : expression '+' expression\n| expression '-' expression\n| expression '*' expression\n| expression '/' expressionexpression : NUMBERexpression : NAMEstatement : NEWLINE"
+_lr_signature = "left+-left*/( ) * + , - . / : < = > AND AS ASSERT ASYNC AWAIT BREAK CLASS CONTINUE DEDENT DEF DEL ELIF ELSE EXCEPT FALSE FINALLY FOR FROM GLOBAL IF IMPORT IN INDENT IS LAMBDA NAME NEWLINE NONE NONLOCAL NOT NUMBER OR PASS PRINT RAISE RETURN STRING TRUE TRY WHILE WITH YIELDprogram : statementsstatements : statements statementstatements : statementstatements : statements NEWLINEstatement : NAME '=' expression NEWLINEstatement : PRINT '(' expression ')' NEWLINEstatement : IF expression ':' NEWLINE INDENT statements DEDENTstatement : IF expression ':' NEWLINE INDENT statements DEDENT ELSE ':' NEWLINE INDENT statements DEDENTstatement : WHILE expression ':' NEWLINE INDENT statements DEDENTexpression : expression '+' expression\n                      | expression '-' expression\n                      | expression '*' expression\n                      | expression '/' expressionexpression : NUMBERexpression : NAMEstatement : NEWLINE"
     
 _lr_action_items = {'NAME':([0,2,3,4,7,8,9,10,11,12,20,21,22,23,25,33,34,35,36,37,38,39,43,44,45,],[5,5,-3,-16,15,15,-2,-4,15,15,15,15,15,15,-5,-6,5,5,5,5,-7,-9,5,5,-8,]),'PRINT':([0,2,3,4,9,10,25,33,34,35,36,37,38,39,43,44,45,],[6,6,-3,-16,-2,-4,-5,-6,6,6,6,6,-7,-9,6,6,-8,]),'IF':([0,2,3,4,9,10,25,33,34,35,36,37,38,39,43,44,45,],[7,7,-3,-16,-2,-4,-5,-6,7,7,7,7,-7,-9,7,7,-8,]),'WHILE':([0,2,3,4,9,10,25,33,34,35,36,37,38,39,43,44,45,],[8,8,-3,-16,-2,-4,-5,-6,8,8,8,8,-7,-9,8,8,-8,]),'NEWLINE':([0,2,3,4,9,10,14,15,17,19,24,25,26,28,29,30,31,33,34,35,36,37,38,39,41,43,44,45,],[4,10,-3,-16,-2,-4,-14,-15,25,27,32,-5,33,-10,-11,-12,-13,-6,4,4,10,10,-7,-9,42,4,10,-8,]),'$end':([1,2,3,4,9,10,25,33,38,39,45,],[0,-1,-3,-16,-2,-4,-5,-6,-7,-9,-8,]),'DEDENT':([3,4,9,10,25,33,36,37,38,39,44,45,],[-3,-16,-2,-4,-5,-6,38,39,-7,-9,45,-8,]),'=':([5,],[11,]),'(':([6,],[12,]),'NUMBER':([7,8,11,12,20,21,22,23,],[14,14,14,14,14,14,14,14,]),':':([13,14,15,16,28,29,30,31,40,],[19,-14,-15,24,-10,-11,-12,-13,41,]),'+':([13,14,15,16,17,18,28,29,30,31,],[20,-14,-15,20,20,20,-10,-11,-12,-13,]),'-':([13,14,15,16,17,18,28,29,30,31,],[21,-14,-15,21,21,21,-10,-11,-12,-13,]),'*':([13,14,15,16,17,18,28,29,30,31,],[22,-14,-15,22,22,22,22,22,-12,-13,]),'/':([13,14,15,16,17,18,28,29,30,31,],[23,-14,-15,23,23,23,23,23,-12,-13,]),')':([14,15,18,28,29,30,31,],[-14,-15,26,-10,-11,-12,-13,]),'INDENT':([27,32,42,],[34,35,43,]),'ELSE':([38,],[40,]),}
 
@@ -27,20 +27,20 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> program","S'",1,None,None,None),
-  ('program -> statements','program',1,'p_program','parser_ast.py',42),
-  ('statements -> statements statement','statements',2,'p_statements_multiple','parser_ast.py',48),
-  ('statements -> statement','statements',1,'p_statements_single','parser_ast.py',53),
-  ('statements -> statements NEWLINE','statements',2,'p_statements_newline','parser_ast.py',58),
-  ('statement -> NAME = expression NEWLINE','statement',4,'p_statement_assign','parser_ast.py',65),
-  ('statement -> PRINT ( expression ) NEWLINE','statement',5,'p_statement_print','parser_ast.py',72),
-  ('statement -> IF expression : NEWLINE INDENT statements DEDENT','statement',7,'p_statement_if','parser_ast.py',78),
-  ('statement -> IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT','statement',13,'p_statement_if_else','parser_ast.py',88),
-  ('statement -> WHILE expression : NEWLINE INDENT statements DEDENT','statement',7,'p_statement_while','parser_ast.py',102),
-  ('expression -> expression + expression','expression',3,'p_expression_binop','parser_ast.py',115),
-  ('expression -> expression - expression','expression',3,'p_expression_binop','parser_ast.py',116),
-  ('expression -> expression * expression','expression',3,'p_expression_binop','parser_ast.py',117),
-  ('expression -> expression / expression','expression',3,'p_expression_binop','parser_ast.py',118),
-  ('expression -> NUMBER','expression',1,'p_expression_number','parser_ast.py',125),
-  ('expression -> NAME','expression',1,'p_expression_name','parser_ast.py',129),
-  ('statement -> NEWLINE','statement',1,'p_statement_newline','parser_ast.py',133),
+  ('program -> statements','program',1,'p_program','parser_ast.py',43),
+  ('statements -> statements statement','statements',2,'p_statements_multiple','parser_ast.py',49),
+  ('statements -> statement','statements',1,'p_statements_single','parser_ast.py',54),
+  ('statements -> statements NEWLINE','statements',2,'p_statements_newline','parser_ast.py',59),
+  ('statement -> NAME = expression NEWLINE','statement',4,'p_statement_assign','parser_ast.py',66),
+  ('statement -> PRINT ( expression ) NEWLINE','statement',5,'p_statement_print','parser_ast.py',73),
+  ('statement -> IF expression : NEWLINE INDENT statements DEDENT','statement',7,'p_statement_if','parser_ast.py',79),
+  ('statement -> IF expression : NEWLINE INDENT statements DEDENT ELSE : NEWLINE INDENT statements DEDENT','statement',13,'p_statement_if_else','parser_ast.py',89),
+  ('statement -> WHILE expression : NEWLINE INDENT statements DEDENT','statement',7,'p_statement_while','parser_ast.py',103),
+  ('expression -> expression + expression','expression',3,'p_expression_binop','parser_ast.py',116),
+  ('expression -> expression - expression','expression',3,'p_expression_binop','parser_ast.py',117),
+  ('expression -> expression * expression','expression',3,'p_expression_binop','parser_ast.py',118),
+  ('expression -> expression / expression','expression',3,'p_expression_binop','parser_ast.py',119),
+  ('expression -> NUMBER','expression',1,'p_expression_number','parser_ast.py',126),
+  ('expression -> NAME','expression',1,'p_expression_name','parser_ast.py',130),
+  ('statement -> NEWLINE','statement',1,'p_statement_newline','parser_ast.py',134),
 ]

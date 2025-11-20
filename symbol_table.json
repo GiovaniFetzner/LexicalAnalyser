@@ -1,9 +1,9 @@
 {
-    "x": {
+    "a": {
         "kind": "var",
         "type": "number"
     },
-    "y": {
+    "b": {
         "kind": "var",
         "type": "number"
     },
@@ -11,11 +11,11 @@
         "kind": "operator",
         "type": "operator"
     },
-    "+": {
+    "-": {
         "kind": "operator",
         "type": "operator"
     },
-    "z": {
+    "c": {
         "kind": "var",
         "type": "number"
     },

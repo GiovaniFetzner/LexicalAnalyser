@@ -66,7 +66,8 @@ def run_tokens_only(code):
         tok = lexer.token()
         if not tok:
             break
-        print(f"{tok.type}\t{tok.value}\t(lineno={tok.lineno}, pos={tok.lexpos})")
+        val = repr(tok.value)
+        print(f"{tok.type}\t{val}\t(lineno={tok.lineno}, pos={tok.lexpos})")
 
 
 def run_ast_only(code):
