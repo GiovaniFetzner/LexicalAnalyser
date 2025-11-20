@@ -1,0 +1,31 @@
+# Ambiente virtual
+venv/
+.env/
+.env*/
+*.venv/
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos gerados por ferramentas (SLY/Yacc)
+parsetab.py
+parser.out
+
+# Arquivos temporários ou derivados
+ast.dot
+ast.png
+symbol_table.json
+
+# Configurações de IDEs
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
