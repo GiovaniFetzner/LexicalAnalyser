@@ -1,0 +1,26 @@
+{
+    "x": {
+        "kind": "var",
+        "type": "number"
+    },
+    "y": {
+        "kind": "var",
+        "type": "number"
+    },
+    "*": {
+        "kind": "operator",
+        "type": "operator"
+    },
+    "+": {
+        "kind": "operator",
+        "type": "operator"
+    },
+    "z": {
+        "kind": "var",
+        "type": "number"
+    },
+    "print": {
+        "kind": "builtin",
+        "type": "builtin"
+    }
+}

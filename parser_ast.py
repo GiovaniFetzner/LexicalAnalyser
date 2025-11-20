@@ -34,6 +34,7 @@ class PythonLikeParser:
     def __init__(self):
         self.lexer = PythonLikeLexer()
         self.parser = yacc.yacc(module=self)
+        self.error = False  # indica se houve erro no parser
 
     # -----------------------
     # Programa e statements

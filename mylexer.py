@@ -45,6 +45,7 @@ class PythonLikeLexer:
     def __init__(self):
         self.indent_stack = [0]  # pilha de indentação
         self.pending = []        # tokens pendentes (DEDENT)
+        self.error = False       # indica se houve erro
         self.lexer = lex.lex(module=self)
 
     # ---------------------------
@@ -112,11 +113,10 @@ class PythonLikeLexer:
     # ---------------------------
     # Retorna token (inclui tokens pendentes)
     # ---------------------------
-    def __init__(self):
-        self.indent_stack = [0]
-        self.pending = []
-        self.error = False  # indica se houve erro
-        self.lexer = lex.lex(module=self)
+    def token(self):
+        if self.pending:
+            return self.pending.pop(0)
+        return self.lexer.token()
 
     # ---------------------------
     # Erro
