@@ -56,6 +56,11 @@ pip install ply
 
 ### GraphViz (opcional, mas recomendado)
 
+Necessário para gerar `ast.png`.
+
+* Windows: [https://graphviz.org/download/](https://graphviz.org/download/)
+* Linux (Debian/Ubuntu):
+
 ```bash
 sudo apt install graphviz
 ```
@@ -73,6 +78,10 @@ python main.py --tokens arquivo.py
 ```bash
 python main.py --ast arquivo.py
 ```
+Gera:
+
+* `ast.dot`
+* `ast.png` (se GraphViz estiver instalado)
 
 ### **3. Pipeline completo (default)**
 ```bash
