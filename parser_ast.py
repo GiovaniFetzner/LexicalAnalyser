@@ -27,6 +27,9 @@ class PythonLikeParser:
 
     # Definição de precedência para evitar shift/reduce
     precedence = (
+        ('left', 'OR'),
+        ('left', 'AND'),
+        ('right', 'NOT'),
         ('left', 'LT', 'GT', 'LE', 'GE', 'EQ', 'NE'),
         ('left', '+', '-'),
         ('left', '*', '/'),
@@ -121,7 +124,12 @@ class PythonLikeParser:
     def p_expression_number(self, p):
         """expression : NUMBER"""
         p[0] = ASTNode('number', p[1])
-    
+
+    def p_expression_boolean(self, p):
+        """expression : TRUE
+                      | FALSE"""
+        p[0] = ASTNode('boolean', p[1] == 'True')
+
     def p_expression_string(self, p):
         """expression : STRING"""
     # Removendo as aspas ao redor da string
@@ -145,6 +153,20 @@ class PythonLikeParser:
         node = ASTNode('binop', p[2])
         node.add(p[1])
         node.add(p[3])
+        p[0] = node
+
+    def p_expression_logic(self, p):
+        """expression : expression AND expression
+                      | expression OR expression"""
+        node = ASTNode('binop', p[2])
+        node.add(p[1])
+        node.add(p[3])
+        p[0] = node
+
+    def p_expression_not(self, p):
+        """expression : NOT expression"""
+        node = ASTNode('unop', p[1])
+        node.add(p[2])
         p[0] = node
 
     def p_statement_newline(self, p):

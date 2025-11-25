@@ -69,6 +69,10 @@ class SemanticAnalyzer:
     def _report_type_error(self, operator, left_type, right_type, detail):
         self._print_error(f"Erro semantico: {detail} na operacao '{operator}' (tipos: {left_type} e {right_type})")
 
+    def _validate_condition(self, expr_type, context):
+        if expr_type not in ('boolean', 'unknown'):
+            self._print_error(f"Erro semantico: condicao de {context} deve ser booleana, recebeu {expr_type}")
+
     def resolve_binop_type(self, left_type, right_type, operator):
         """Retorna o tipo resultante de uma operacao binaria ou 'unknown' em caso de erro."""
         numeric_types = {'number', 'int', 'float'}
@@ -91,6 +95,24 @@ class SemanticAnalyzer:
             self._report_type_error(operator, left_type, right_type, f"operador '{operator}' aceita apenas tipos numericos")
             return 'unknown'
 
+        if operator in ('<', '>', '<=', '>='):
+            if left_type in numeric_types and right_type in numeric_types:
+                return 'boolean'
+            self._report_type_error(operator, left_type, right_type, f"operador '{operator}' aceita apenas comparacao numerica")
+            return 'unknown'
+
+        if operator in ('==', '!='):
+            if (left_type in numeric_types and right_type in numeric_types) or (left_type == right_type):
+                return 'boolean'
+            self._report_type_error(operator, left_type, right_type, "comparacao exige tipos compatíveis")
+            return 'unknown'
+
+        if operator in ('and', 'or'):
+            if left_type == 'boolean' and right_type == 'boolean':
+                return 'boolean'
+            self._report_type_error(operator, left_type, right_type, "operador logico requer booleanos")
+            return 'unknown'
+
         self._report_type_error(operator, left_type, right_type, f"operador '{operator}' nao possui regra de tipos")
         return 'unknown'
 
@@ -101,6 +123,10 @@ class SemanticAnalyzer:
         if node.type == 'number':
             self.add_to_symbol_table(node.value, data_type='number', category='literal')
             return 'number'
+
+        elif node.type == 'boolean':
+            self.add_to_symbol_table(node.value, data_type='boolean', category='literal')
+            return 'boolean'
 
         elif node.type == 'string':
             self.add_to_symbol_table(node.value, data_type='string', category='literal')
@@ -126,6 +152,18 @@ class SemanticAnalyzer:
         elif node.type == 'block':
             return None
 
+        elif node.type == 'unop':
+            operand_type = self.infer_type(node.children[0])
+            operator = node.value
+            self.add_to_symbol_table(operator, data_type='operator', category='operator')
+            if operator == 'not':
+                if operand_type == 'boolean':
+                    return 'boolean'
+                self._print_error(f"Erro semantico: operador 'not' requer boolean, recebeu {operand_type}")
+                return 'unknown'
+            self._print_error(f"Erro semantico: operador unario '{operator}' nao possui regra de tipos")
+            return 'unknown'
+
         return 'unknown'
 
     def analyze(self, node):
@@ -147,7 +185,8 @@ class SemanticAnalyzer:
                 self.infer_type(node.children[0])
 
         elif node.type in ('if', 'if_else', 'while'):
-            self.infer_type(node.children[0])
+            cond_type = self.infer_type(node.children[0])
+            self._validate_condition(cond_type, node.type)
             if len(node.children) > 1:
                 self.analyze(node.children[1])
             if node.type == 'if_else' and len(node.children) > 2:
