@@ -54,23 +54,18 @@ class PythonLikeParser:
         """statements : statement"""
         p[0] = [p[1]]
 
-    # Permitir NEWLINE isolado (ex.: final de arquivo ou múltiplas linhas vazias)
-    def p_statements_newline(self, p):
-        """statements : statements NEWLINE"""
-        p[0] = p[1]
-
     # -----------------------
     # Statements
     # -----------------------
     def p_statement_assign(self, p):
-        """statement : NAME '=' expression NEWLINE"""
+        """statement : NAME '=' expression opt_newline"""
         node = ASTNode('assign')
         node.add(ASTNode('var', p[1]))
         node.add(p[3])
         p[0] = node
 
     def p_statement_print(self, p):
-        """statement : PRINT '(' expression ')' NEWLINE"""
+        """statement : PRINT '(' expression ')' opt_newline"""
         node = ASTNode('print')
         node.add(p[3])
         p[0] = node
@@ -135,9 +130,18 @@ class PythonLikeParser:
         """expression : NAME"""
         p[0] = ASTNode('var', p[1])
 
+    def p_expression_group(self, p):
+        """expression : '(' expression ')'"""
+        p[0] = p[2]
+
     def p_statement_newline(self, p):
         """statement : NEWLINE"""
         # apenas ignora linhas vazias
+        p[0] = None
+
+    def p_opt_newline(self, p):
+        """opt_newline : NEWLINE
+                       | """
         p[0] = None
     
 

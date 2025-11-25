@@ -60,16 +60,33 @@ class SemanticAnalyzer:
         entry = self.lookup_symbol(name)
         return entry.get('data_type') if entry else None
 
-    def check_type_compatibility(self, left_type, right_type, operator):
+    def _report_type_error(self, operator, left_type, right_type, detail):
+        print(f"Erro semantico: {detail} na operacao '{operator}' (tipos: {left_type} e {right_type})")
+
+    def resolve_binop_type(self, left_type, right_type, operator):
+        """Retorna o tipo resultante de uma operacao binaria ou 'unknown' em caso de erro."""
         numeric_types = {'number', 'int', 'float'}
 
-        if left_type is None or right_type is None:
-            print(f"Erro semântico: tipo desconhecido em operação {operator}: {left_type} e {right_type}")
-            return False
-        if left_type not in numeric_types or right_type not in numeric_types:
-            print(f"Erro semântico: tipos incompatíveis para a operação {operator}: {left_type} e {right_type}")
-            return False
-        return True
+        if left_type in (None, 'unknown') or right_type in (None, 'unknown'):
+            self._report_type_error(operator, left_type, right_type, "tipo desconhecido")
+            return 'unknown'
+
+        if operator == '+':
+            if left_type in numeric_types and right_type in numeric_types:
+                return 'number'
+            if left_type == 'string' and right_type == 'string':
+                return 'string'
+            self._report_type_error(operator, left_type, right_type, "soma requer dois numeros ou duas strings")
+            return 'unknown'
+
+        if operator in ('-', '*', '/'):
+            if left_type in numeric_types and right_type in numeric_types:
+                return 'number'
+            self._report_type_error(operator, left_type, right_type, f"operador '{operator}' aceita apenas tipos numericos")
+            return 'unknown'
+
+        self._report_type_error(operator, left_type, right_type, f"operador '{operator}' nao possui regra de tipos")
+        return 'unknown'
 
     def infer_type(self, node):
         if node is None:
@@ -98,10 +115,7 @@ class SemanticAnalyzer:
 
             self.add_to_symbol_table(operator, data_type='operator', category='operator')
 
-            if self.check_type_compatibility(left_type, right_type, operator):
-                return 'number'
-            else:
-                return 'unknown'
+            return self.resolve_binop_type(left_type, right_type, operator)
 
         elif node.type == 'block':
             return None
