@@ -27,6 +27,7 @@ class PythonLikeParser:
 
     # Definição de precedência para evitar shift/reduce
     precedence = (
+        ('left', 'LT', 'GT', 'LE', 'GE', 'EQ', 'NE'),
         ('left', '+', '-'),
         ('left', '*', '/'),
     )
@@ -134,6 +135,18 @@ class PythonLikeParser:
         """expression : '(' expression ')'"""
         p[0] = p[2]
 
+    def p_expression_compare(self, p):
+        """expression : expression LT expression
+                      | expression GT expression
+                      | expression LE expression
+                      | expression GE expression
+                      | expression EQ expression
+                      | expression NE expression"""
+        node = ASTNode('binop', p[2])
+        node.add(p[1])
+        node.add(p[3])
+        p[0] = node
+
     def p_statement_newline(self, p):
         """statement : NEWLINE"""
         # apenas ignora linhas vazias
@@ -168,4 +181,5 @@ class PythonLikeParser:
     # Parse
     # -----------------------
     def parse(self, code):
-        return self.parser.parse(code, lexer=self.lexer.lexer)
+        # Use o wrapper do lexer para que INDENT/DEDENT sejam emitidos corretamente
+        return self.parser.parse(code, lexer=self.lexer)

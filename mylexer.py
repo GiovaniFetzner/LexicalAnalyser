@@ -26,12 +26,18 @@ class PythonLikeLexer:
         'NEWLINE',
         'INDENT',
         'DEDENT',
+        'EQ',
+        'NE',
+        'LE',
+        'GE',
+        'LT',
+        'GT',
     ] + [kw.upper() for kw in keywords]  # palavra-chave vira token separado
 
     # ---------------------------
     # Literais (somente caracteres únicos)
     # ---------------------------
-    literals = ['+', '-', '*', '/', '=', '(', ')', ':', ',', '.', '<', '>']
+    literals = ['+', '-', '*', '/', '=', '(', ')', ':', ',', '.']
 
     # ---------------------------
     # Ignorar comentários e espaços
@@ -48,6 +54,14 @@ class PythonLikeLexer:
         self.error = False       # indica se houve erro
         self.lexer = lex.lex(module=self)
 
+    def input(self, data):
+        """Reinicia estado e envia novo código para o lexer interno."""
+        self.indent_stack = [0]
+        self.pending = []
+        self.error = False
+        self.lexer.lineno = 1
+        self.lexer.input(data)
+
     # ---------------------------
     # Tokens básicos
     # ---------------------------
@@ -59,6 +73,16 @@ class PythonLikeLexer:
     def t_STRING(self, t):
         r'(\".*?\"|\'.*?\')'
         return t
+
+    # ---------------------------
+    # Comparadores
+    # ---------------------------
+    t_LE = r'<='
+    t_GE = r'>='
+    t_EQ = r'=='
+    t_NE = r'!='
+    t_LT = r'<'
+    t_GT = r'>'
 
     # ---------------------------
     # Nome / palavra-chave

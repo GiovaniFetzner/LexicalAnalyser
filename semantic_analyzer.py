@@ -1,6 +1,9 @@
 import json
 
 class SemanticAnalyzer:
+    RED = "\033[38;2;220;20;60m"  # vermelho visivel para erros
+    RESET = "\033[0m"
+
     def __init__(self):
         # A tabela agora é explicativa:
         # name -> {
@@ -60,8 +63,11 @@ class SemanticAnalyzer:
         entry = self.lookup_symbol(name)
         return entry.get('data_type') if entry else None
 
+    def _print_error(self, message):
+        print(f"{self.RED}{message}{self.RESET}")
+
     def _report_type_error(self, operator, left_type, right_type, detail):
-        print(f"Erro semantico: {detail} na operacao '{operator}' (tipos: {left_type} e {right_type})")
+        self._print_error(f"Erro semantico: {detail} na operacao '{operator}' (tipos: {left_type} e {right_type})")
 
     def resolve_binop_type(self, left_type, right_type, operator):
         """Retorna o tipo resultante de uma operacao binaria ou 'unknown' em caso de erro."""
@@ -104,7 +110,7 @@ class SemanticAnalyzer:
             var_name = node.value
             var_type = self.get_type(var_name)
             if var_type is None:
-                print(f"Erro semântico: A variável '{var_name}' não foi declarada.")
+                self._print_error(f"Erro semantico: A variavel '{var_name}' nao foi declarada.")
                 return 'unknown'
             return var_type
 
@@ -157,7 +163,7 @@ class SemanticAnalyzer:
         elif node.type == 'var':
             var_name = node.value
             if self.lookup_symbol(var_name) is None:
-                print(f"Erro semântico: A variável '{var_name}' não foi declarada.")
+                self._print_error(f"Erro semantico: A variavel '{var_name}' nao foi declarada.")
 
     def save_symbol_table(self, filename="symbol_table.json"):
         with open(filename, "w") as f:
