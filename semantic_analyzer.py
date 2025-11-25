@@ -1,6 +1,9 @@
 import json
 
 class SemanticAnalyzer:
+    RED = "\033[38;2;220;20;60m"  # vermelho visivel para erros
+    RESET = "\033[0m"
+
     def __init__(self):
         # A tabela agora é explicativa:
         # name -> {
@@ -60,16 +63,58 @@ class SemanticAnalyzer:
         entry = self.lookup_symbol(name)
         return entry.get('data_type') if entry else None
 
-    def check_type_compatibility(self, left_type, right_type, operator):
+    def _print_error(self, message):
+        print(f"{self.RED}{message}{self.RESET}")
+
+    def _report_type_error(self, operator, left_type, right_type, detail):
+        self._print_error(f"Erro semantico: {detail} na operacao '{operator}' (tipos: {left_type} e {right_type})")
+
+    def _validate_condition(self, expr_type, context):
+        if expr_type not in ('boolean', 'unknown'):
+            self._print_error(f"Erro semantico: condicao de {context} deve ser booleana, recebeu {expr_type}")
+
+    def resolve_binop_type(self, left_type, right_type, operator):
+        """Retorna o tipo resultante de uma operacao binaria ou 'unknown' em caso de erro."""
         numeric_types = {'number', 'int', 'float'}
 
-        if left_type is None or right_type is None:
-            print(f"Erro semântico: tipo desconhecido em operação {operator}: {left_type} e {right_type}")
-            return False
-        if left_type not in numeric_types or right_type not in numeric_types:
-            print(f"Erro semântico: tipos incompatíveis para a operação {operator}: {left_type} e {right_type}")
-            return False
-        return True
+        if left_type in (None, 'unknown') or right_type in (None, 'unknown'):
+            self._report_type_error(operator, left_type, right_type, "tipo desconhecido")
+            return 'unknown'
+
+        if operator == '+':
+            if left_type in numeric_types and right_type in numeric_types:
+                return 'number'
+            if left_type == 'string' and right_type == 'string':
+                return 'string'
+            self._report_type_error(operator, left_type, right_type, "soma requer dois numeros ou duas strings")
+            return 'unknown'
+
+        if operator in ('-', '*', '/'):
+            if left_type in numeric_types and right_type in numeric_types:
+                return 'number'
+            self._report_type_error(operator, left_type, right_type, f"operador '{operator}' aceita apenas tipos numericos")
+            return 'unknown'
+
+        if operator in ('<', '>', '<=', '>='):
+            if left_type in numeric_types and right_type in numeric_types:
+                return 'boolean'
+            self._report_type_error(operator, left_type, right_type, f"operador '{operator}' aceita apenas comparacao numerica")
+            return 'unknown'
+
+        if operator in ('==', '!='):
+            if (left_type in numeric_types and right_type in numeric_types) or (left_type == right_type):
+                return 'boolean'
+            self._report_type_error(operator, left_type, right_type, "comparacao exige tipos compatíveis")
+            return 'unknown'
+
+        if operator in ('and', 'or'):
+            if left_type == 'boolean' and right_type == 'boolean':
+                return 'boolean'
+            self._report_type_error(operator, left_type, right_type, "operador logico requer booleanos")
+            return 'unknown'
+
+        self._report_type_error(operator, left_type, right_type, f"operador '{operator}' nao possui regra de tipos")
+        return 'unknown'
 
     def infer_type(self, node):
         if node is None:
@@ -79,6 +124,10 @@ class SemanticAnalyzer:
             self.add_to_symbol_table(node.value, data_type='number', category='literal')
             return 'number'
 
+        elif node.type == 'boolean':
+            self.add_to_symbol_table(node.value, data_type='boolean', category='literal')
+            return 'boolean'
+
         elif node.type == 'string':
             self.add_to_symbol_table(node.value, data_type='string', category='literal')
             return 'string'
@@ -87,7 +136,7 @@ class SemanticAnalyzer:
             var_name = node.value
             var_type = self.get_type(var_name)
             if var_type is None:
-                print(f"Erro semântico: A variável '{var_name}' não foi declarada.")
+                self._print_error(f"Erro semantico: A variavel '{var_name}' nao foi declarada.")
                 return 'unknown'
             return var_type
 
@@ -98,13 +147,22 @@ class SemanticAnalyzer:
 
             self.add_to_symbol_table(operator, data_type='operator', category='operator')
 
-            if self.check_type_compatibility(left_type, right_type, operator):
-                return 'number'
-            else:
-                return 'unknown'
+            return self.resolve_binop_type(left_type, right_type, operator)
 
         elif node.type == 'block':
             return None
+
+        elif node.type == 'unop':
+            operand_type = self.infer_type(node.children[0])
+            operator = node.value
+            self.add_to_symbol_table(operator, data_type='operator', category='operator')
+            if operator == 'not':
+                if operand_type == 'boolean':
+                    return 'boolean'
+                self._print_error(f"Erro semantico: operador 'not' requer boolean, recebeu {operand_type}")
+                return 'unknown'
+            self._print_error(f"Erro semantico: operador unario '{operator}' nao possui regra de tipos")
+            return 'unknown'
 
         return 'unknown'
 
@@ -127,7 +185,8 @@ class SemanticAnalyzer:
                 self.infer_type(node.children[0])
 
         elif node.type in ('if', 'if_else', 'while'):
-            self.infer_type(node.children[0])
+            cond_type = self.infer_type(node.children[0])
+            self._validate_condition(cond_type, node.type)
             if len(node.children) > 1:
                 self.analyze(node.children[1])
             if node.type == 'if_else' and len(node.children) > 2:
@@ -143,7 +202,7 @@ class SemanticAnalyzer:
         elif node.type == 'var':
             var_name = node.value
             if self.lookup_symbol(var_name) is None:
-                print(f"Erro semântico: A variável '{var_name}' não foi declarada.")
+                self._print_error(f"Erro semantico: A variavel '{var_name}' nao foi declarada.")
 
     def save_symbol_table(self, filename="symbol_table.json"):
         with open(filename, "w") as f:

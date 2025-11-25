@@ -27,6 +27,10 @@ class PythonLikeParser:
 
     # Definição de precedência para evitar shift/reduce
     precedence = (
+        ('left', 'OR'),
+        ('left', 'AND'),
+        ('right', 'NOT'),
+        ('left', 'LT', 'GT', 'LE', 'GE', 'EQ', 'NE'),
         ('left', '+', '-'),
         ('left', '*', '/'),
     )
@@ -54,23 +58,18 @@ class PythonLikeParser:
         """statements : statement"""
         p[0] = [p[1]]
 
-    # Permitir NEWLINE isolado (ex.: final de arquivo ou múltiplas linhas vazias)
-    def p_statements_newline(self, p):
-        """statements : statements NEWLINE"""
-        p[0] = p[1]
-
     # -----------------------
     # Statements
     # -----------------------
     def p_statement_assign(self, p):
-        """statement : NAME '=' expression NEWLINE"""
+        """statement : NAME '=' expression opt_newline"""
         node = ASTNode('assign')
         node.add(ASTNode('var', p[1]))
         node.add(p[3])
         p[0] = node
 
     def p_statement_print(self, p):
-        """statement : PRINT '(' expression ')' NEWLINE"""
+        """statement : PRINT '(' expression ')' opt_newline"""
         node = ASTNode('print')
         node.add(p[3])
         p[0] = node
@@ -131,14 +130,60 @@ class PythonLikeParser:
         p[0] = ASTNode('string', p[1])
 
 
+    def p_expression_boolean(self, p):
+        """expression : TRUE
+                      | FALSE"""
+        p[0] = ASTNode('boolean', p[1] == 'True')
+
+    def p_expression_string(self, p):
+        """expression : STRING"""
+    # Removendo as aspas ao redor da string
+        p[0] = ASTNode('string', p[1][1:-1])
+
     def p_expression_name(self, p):
         """expression : NAME"""
         p[0] = ASTNode('var', p[1])
+
+    def p_expression_group(self, p):
+        """expression : '(' expression ')'"""
+        p[0] = p[2]
+
+    def p_expression_compare(self, p):
+        """expression : expression LT expression
+                      | expression GT expression
+                      | expression LE expression
+                      | expression GE expression
+                      | expression EQ expression
+                      | expression NE expression"""
+        node = ASTNode('binop', p[2])
+        node.add(p[1])
+        node.add(p[3])
+        p[0] = node
+
+    def p_expression_logic(self, p):
+        """expression : expression AND expression
+                      | expression OR expression"""
+        node = ASTNode('binop', p[2])
+        node.add(p[1])
+        node.add(p[3])
+        p[0] = node
+
+    def p_expression_not(self, p):
+        """expression : NOT expression"""
+        node = ASTNode('unop', p[1])
+        node.add(p[2])
+        p[0] = node
 
     def p_statement_newline(self, p):
         """statement : NEWLINE"""
         # apenas ignora linhas vazias
         p[0] = None
+
+    def p_opt_newline(self, p):
+        """opt_newline : NEWLINE
+                       | """
+        p[0] = None
+    
 
     # -----------------------
     # Erro
@@ -163,4 +208,5 @@ class PythonLikeParser:
     # Parse
     # -----------------------
     def parse(self, code):
-        return self.parser.parse(code, lexer=self.lexer.lexer)
+        # Use o wrapper do lexer para que INDENT/DEDENT sejam emitidos corretamente
+        return self.parser.parse(code, lexer=self.lexer)
