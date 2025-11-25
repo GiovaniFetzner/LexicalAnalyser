@@ -1,0 +1,3 @@
+a = 'banana'
+b = 22 
+c = a + b 

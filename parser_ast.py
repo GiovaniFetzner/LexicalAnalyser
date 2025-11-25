@@ -125,6 +125,11 @@ class PythonLikeParser:
     def p_expression_number(self, p):
         """expression : NUMBER"""
         p[0] = ASTNode('number', p[1])
+    
+    def p_expression_string(self, p):
+        """expression : STRING"""
+    # Removendo as aspas ao redor da string
+        p[0] = ASTNode('string', p[1][1:-1])
 
     def p_expression_name(self, p):
         """expression : NAME"""
@@ -134,6 +139,7 @@ class PythonLikeParser:
         """statement : NEWLINE"""
         # apenas ignora linhas vazias
         p[0] = None
+    
 
     # -----------------------
     # Erro
