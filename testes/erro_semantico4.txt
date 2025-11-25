@@ -1,0 +1,6 @@
+a = True
+b = 2
+c = a and b  # operador logico com tipos nao booleanos
+d = not b    # not aplicado em numero
+print(c)
+print(d)

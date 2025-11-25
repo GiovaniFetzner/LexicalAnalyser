@@ -1,0 +1,3 @@
+x = 5
+if x + 2:  # condicao nao booleana
+    print(x)
