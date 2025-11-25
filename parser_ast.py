@@ -124,6 +124,11 @@ class PythonLikeParser:
     def p_expression_number(self, p):
         """expression : NUMBER"""
         p[0] = ASTNode('number', p[1])
+    
+    def p_expression_string(self, p):
+        """expression : STRING"""
+        p[0] = ASTNode('string', p[1])
+
 
     def p_expression_boolean(self, p):
         """expression : TRUE
