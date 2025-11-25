@@ -1,0 +1,3 @@
+a = "texto"
+b = 10
+c = a + b  # string + number

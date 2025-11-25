@@ -1,0 +1,3 @@
+a = 1
+b = "str"
+resultado = a > b  # comparacao numerica invalida
